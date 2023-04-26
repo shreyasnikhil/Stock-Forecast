@@ -71,7 +71,7 @@ data = df.filter(['Close'])
 # convert the dataframe to numpy array
 dataset = data.values
 # Get the number of rows to train the model on
-training_data_len = math.ceil(len(dataset)*.8)
+training_data_len = math.ceil(len(dataset)*1)
 scaler = MinMaxScaler(feature_range=(0, 1))
 scaled_data = scaler.fit_transform(dataset)
 scaled_data = np.array(scaled_data)
@@ -86,22 +86,9 @@ for i in range(best_window_size, len(train_data)):
     x_train.append(train_data[i-best_window_size:i, 0])
     y_train.append(train_data[i, 0])
 # Create the testing data set
-# Create a new array containing scaled values from index 2101 to 2701
-test_data = scaled_data[training_data_len-best_window_size:, :]
-# Create the data sets x_test and y_test
-x_test = []
-y_test = dataset[training_data_len:, :]
-y_test_dummy = []
-for i in range(best_window_size, len(test_data)):
-    x_test.append(test_data[i-best_window_size:i, 0])
-    y_test_dummy.append(test_data[i, 0])
 
 x_train, y_train = np.array(x_train), np.array(y_train)
 x_train = np.reshape(x_train, (x_train.shape[0], x_train.shape[1], 1))
-# Convert the data to a numpy array
-x_test = np.array(x_test)
-# reshape the data
-x_test = np.reshape(x_test, (x_test.shape[0], x_test.shape[1], 1))
 
 model = load_model('m.h5')
 
