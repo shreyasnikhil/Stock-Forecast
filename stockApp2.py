@@ -150,7 +150,7 @@ shreyas = []
 date = datetime.datetime.now()
 for i in range(period):
     shreyas.append(date)
-    print(date.date())
+    #print(date.date())
     date += datetime.timedelta(days=1)
     if (date.weekday() == 5):
         date += datetime.timedelta(days=2)
