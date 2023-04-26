@@ -71,7 +71,7 @@ data = df.filter(['Close'])
 # convert the dataframe to numpy array
 dataset = data.values
 # Get the number of rows to train the model on
-training_data_len = math.ceil(len(dataset)*1)
+training_data_len = math.ceil(len(dataset)*.8)
 scaler = MinMaxScaler(feature_range=(0, 1))
 scaled_data = scaler.fit_transform(dataset)
 scaled_data = np.array(scaled_data)
@@ -86,9 +86,22 @@ for i in range(best_window_size, len(train_data)):
     x_train.append(train_data[i-best_window_size:i, 0])
     y_train.append(train_data[i, 0])
 # Create the testing data set
+# Create a new array containing scaled values from index 2101 to 2701
+test_data = scaled_data[training_data_len-best_window_size:, :]
+# Create the data sets x_test and y_test
+x_test = []
+y_test = dataset[training_data_len:, :]
+y_test_dummy = []
+for i in range(best_window_size, len(test_data)):
+    x_test.append(test_data[i-best_window_size:i, 0])
+    y_test_dummy.append(test_data[i, 0])
 
 x_train, y_train = np.array(x_train), np.array(y_train)
 x_train = np.reshape(x_train, (x_train.shape[0], x_train.shape[1], 1))
+# Convert the data to a numpy array
+x_test = np.array(x_test)
+# reshape the data
+x_test = np.reshape(x_test, (x_test.shape[0], x_test.shape[1], 1))
 
 model = load_model('m.h5')
 
@@ -106,30 +119,30 @@ i = 0
 while (i < period):
 
     if (len(temp_input) > best_window_size):
-        # print(temp_input)
+        # (temp_input)
         x_input = np.array(temp_input[1:])
-        # print("{} day input {}".format(i,x_input))
+        # ("{} day input {}".format(i,x_input))
         x_input = x_input.reshape(1, -1)
         x_input = x_input.reshape((1, n_steps, 1))
-        # print(x_input)
+        # (x_input)
         yhat = model.predict(x_input, verbose=0)
-        # print("{} day output {}".format(i,yhat))
+        # ("{} day output {}".format(i,yhat))
         temp_input.extend(yhat[0].tolist())
         temp_input = temp_input[1:]
-        # print(temp_input)
+        # (temp_input)
         lst_output.extend(yhat.tolist())
         i = i+1
     else:
         x_input = x_input.reshape((1, n_steps, 1))
         yhat = model.predict(x_input, verbose=0)
-        # print(yhat[0])
+        # (yhat[0])
         temp_input.extend(yhat[0].tolist())
-        # print(len(temp_input))
+        # (len(temp_input))
         lst_output.extend(yhat.tolist())
         i = i+1
 
 
-# print(lst_output)
+# (lst_output)
 lst_output = np.array(lst_output)
 lst_output = scaler.inverse_transform(lst_output)
 
@@ -137,7 +150,6 @@ shreyas = []
 date = datetime.datetime.now()
 for i in range(period):
     shreyas.append(date)
-    #print(date.date())
     date += datetime.timedelta(days=1)
     if (date.weekday() == 5):
         date += datetime.timedelta(days=2)
